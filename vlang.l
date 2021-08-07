@@ -15,7 +15,7 @@ mulAndDivOP        [*/]
 plusAndMinOP       [+-]
 size               [{][0-9]+[}]
 Vector             \[[ ]*-?[ ]*[0-9]+([ ]*,[ ]*-?[ ]*[0-9]+[ ]*)*\]
-                   
+
 %%
 "scl"                  {return Scl;}
 "vec"                  {return Vec;}

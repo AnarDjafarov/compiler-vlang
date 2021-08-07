@@ -130,7 +130,7 @@ void build_C_File_Template(FILE * dest)
     
 	fprintf(dest,"//implementations for helped functions");
 
-	fprintf(dest,"\nint PointCalc(int* vec1, int* vec2, int size, int scl)");
+	fprintf(dest,"\nint pointCalc(int* vec1, int* vec2, int size, int scl)");
     fprintf(dest,"\n{\n");
 	fprintf(dest,"\tint result = 0;");
     fprintf(dest,"\n\tfor (int i = 0; i < size; i++)");
@@ -158,17 +158,17 @@ void build_C_File_Template(FILE * dest)
 	fprintf(dest , "\tfor(int i=0; i< size-1; i++)\n\t{\n\t\tprintf(\"%%d,\" ,vec[i]);//print every cell in array\n\t}\n");
 	fprintf(dest, "\tprintf(\"%%d]\\n\", vec[size -1]);\n}\n\n");
 
-	fprintf(dest, "\nvoid AssgnScalarArray(int* vec, int size, int scl)\n");
+	fprintf(dest, "\nvoid assignScalarVector(int* vec, int size, int scl)\n");
 	fprintf(dest , "{\n\tfor(int i = 0; i < size; i++)");
 	fprintf(dest , "\n\t{\n\t\tvec[i] = scl;//assigment the scalar for every cell in the arry\n\t}\t\n}\n\n");
 
-	fprintf(dest, "\nvoid AssgnArrayArray(int* dst, int* src, int size)\n");
+	fprintf(dest, "\nvoid AssignVectorVector(int* dst, int* src, int size)\n");
 	fprintf(dest , "{\n\tfor(int i=0; i< size; i++)\n\t");
 	fprintf(dest , "{\n\t\t");
 	fprintf(dest , "dst[i] = src[i];//assigment for evrey cell from src array to dst array \n\t}");
 	fprintf(dest , "\n}\n");
 
-	fprintf(dest,"\nint* VectorsCalacs(int* vec1, char op, int* vec2, int size)\n{");
+	fprintf(dest,"\nint* vectorVectorOp(int* vec1, char op, int* vec2, int size)\n{");
 	fprintf(dest,"\n\tint *temp = malloc(sizeof(int) * size);//alocate_memory for the answer");
     fprintf(dest,"\n\tswitch (op)");
 	fprintf(dest,"\n\t{");
@@ -198,7 +198,7 @@ void build_C_File_Template(FILE * dest)
     fprintf(dest,"\n\t\t\tbreak;\n");
     fprintf(dest,"\t}\n\treturn temp;\n}\n");
 
-	fprintf(dest,"\nint* VectorScalarCalacs(int* vec, char op, int scl, int size)\n{");
+	fprintf(dest,"\nint* vectorScalarOp(int* vec, char op, int scl, int size)\n{");
 	fprintf(dest,"\n\tint *temp = malloc(sizeof(int) * size);//alocate_memory for the answer");
     fprintf(dest,"\n\tswitch (op)");
 	fprintf(dest,"\n\t{");
@@ -265,19 +265,19 @@ void operatorHandler(char* expl, char* op, char* expr, char* dest)
 		num[0] = '\0';
 		if(expLValue >= 0 && expRValue >= 0)
 		{
-			fprintf(yyout,"\n\tint* %s = VectorsCalacs(%s, \'%s\', %s, %s);\n", dest ,expl, op , expr, vectorSize[expLValue]);
+			fprintf(yyout,"\n\tint* %s = vectorVectorOp(%s, \'%s\', %s, %s);\n", dest ,expl, op , expr, vectorSize[expLValue]);
 			counter = atoi(vectorSize[expLValue]);
 			itoa(counter, num , 8);
 		}
 		else if(expLValue >= 0 && expRValue <= 0)
 		{
-			fprintf(yyout,"\n\tint* %s = VectorScalarCalacs(%s,\'%s\', %s, %s);\n", dest, expl, op, expr,vectorSize[expLValue]);
+			fprintf(yyout,"\n\tint* %s = vectorScalarOp(%s,\'%s\', %s, %s);\n", dest, expl, op, expr,vectorSize[expLValue]);
 			counter = atoi(vectorSize[expLValue]);
 			itoa(counter, num , 8);
 		}
 		else if(expLValue <= 0 && expRValue >= 0)
 		{
-			fprintf(yyout,"\n\tint* %s = VectorScalarCalacs(%s,\'%s\', %s, %s);\n", dest, expr ,op, expl,vectorSize[expLValue]);
+			fprintf(yyout,"\n\tint* %s = vectorScalarOp(%s,\'%s\', %s, %s);\n", dest, expr ,op, expl,vectorSize[expLValue]);
 			counter = atoi(vectorSize[expRValue]);
 			itoa(counter, num , 10);
 		}
@@ -360,7 +360,7 @@ void printAssignment(char* term, char* exp)
 		if(existingVectors[0])
 		{
 			fprintf(yyout, "\n\ttemp = %s;", exp);
-			fprintf(yyout, "\n\tAssgnArrayArray(%s, temp , %d);\n", term, existingVectors[1]);
+			fprintf(yyout, "\n\tAssignVectorVector(%s, temp , %d);\n", term, existingVectors[1]);
 			fprintf(yyout, "\n\tfree(temp);\n");
 
 			//nullify tmp vector array bytes
@@ -369,11 +369,11 @@ void printAssignment(char* term, char* exp)
 		}
 		else if(expVal == -1)
 		{
-			fprintf(yyout, "\n\tAssgnScalarArray(%s, %s, %s);\n", term, vectorSize[termVal], exp);
+			fprintf(yyout, "\n\tassignScalarVector(%s, %s, %s);\n", term, vectorSize[termVal], exp);
 		}
 		else
 		{
-			fprintf(yyout, "\n\tAssgnArrayArray(%s, %s, %s);\n", term, exp,vectorSize[termVal]);
+			fprintf(yyout, "\n\tAssignVectorVector(%s, %s, %s);\n", term, exp,vectorSize[termVal]);
 		}
 	}
 	else
@@ -452,7 +452,7 @@ void printPointCalc(char* firstExp, char* seconedExp, char* dest)
 	int SecVal = CheckVectorExist(seconedExp);
 	if(FirstVal != -1 && SecVal != -1)
 	{
-		extractVal("PointCalc(", buff);
+		extractVal("pointCalc(", buff);
 		extractVal(seconedExp, buff);
 		extractVal("," , buff);
 		extractVal(firstExp, buff);
@@ -465,7 +465,7 @@ void printPointCalc(char* firstExp, char* seconedExp, char* dest)
 	}
 	else if(SecVal == -1)
 	{		
-		extractVal("PointCalc(", buff);
+		extractVal("pointCalc(", buff);
 		extractVal(firstExp, buff);
 		extractVal("," , buff);
 		extractVal("NULL", buff);
@@ -480,7 +480,7 @@ void printPointCalc(char* firstExp, char* seconedExp, char* dest)
 	}
 	else if(FirstVal == -1)
 	{		
-		extractVal("PointCalc(", buff);
+		extractVal("pointCalc(", buff);
 		extractVal(seconedExp, buff);
 		extractVal("," , buff);
 		extractVal("NULL", buff);
